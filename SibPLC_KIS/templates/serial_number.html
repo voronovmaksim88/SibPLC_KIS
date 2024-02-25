@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{name}}
+{% endblock %}
+
+
+{% block name%}
+{{name}}
+{% endblock %}
+
+{% block head %}
+{% load static %}
+<!-- Подключаем стили -->
+<link type="text/css" href="{% static 'serial_number/css/style.css' %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block body %}
+<!--{% for snb in box_accounting %}-->
+<!--<p style="color: grey">{{snb.serial_num}}, {{snb.name}}, {{snb.order}}, {{snb.order.customer.name}}, {{snb.scheme_developer}},-->
+<!--    {{snb.assembler}}, {{snb.tester}}, {{snb.programmer}}</p>-->
+<!--{% endfor %}-->
+<!--<hr>-->
+
+
+<!-- Таблица серийных номеров шкафов -->
+<div class="container"><!-- впихиваем таблицу в контейнер -->
+    <!--    Класс container создает контейнер с фиксированной шириной, которая адаптируется к размеру экрана и обеспечивает отступы слева и справа.-->
+    <table class="table table-bordered table-striped" id=TableBoxSerialNum>
+        <!--    table-striped - для чередования белого и серого фона-->
+        <!--    table-bordered - для вертикальных линий-->
+
+        <thead>
+        <tr>
+            <th colspan="8">
+                <div class="d-flex">
+                    <h3>Серийные номера шкафов</h3>
+                    <!-- Кнопка для открытия модального окна -->
+
+                    <button class="btn btn-primary ms-auto" id="openModalBtn" data-bs-toggle="modal"
+                            data-bs-target="#testModal">
+                        Добавить
+                    </button>
+                    {% if perms.main.can_add_box_accounting %}
+                    <!-- контент, доступный для просмотра только пользователями с соответствующими разрешениями -->
+                    {% endif %}
+                </div>
+            </th>
+        </tr>
+        </thead>
+
+        <tr class="table text-center">
+            <th>С/Н
+                <input type="text" class="form-control" id="filter-sn">
+            </th>
+            <th>Заявка
+                <input type="text" class="form-control" id="filter-order">
+            </th>
+            <th>Название
+                <input type="text" class="form-control" id="filter-name">
+            </th>
+            <th>Заказчик
+                <input type="text" class="form-control" id="find_4">
+            </th>
+            <th>Схема
+                <input type="text" class="form-control" id="find_5">
+            </th>
+            <th>Сборщик
+                <input type="text" class="form-control" id="find_6">
+            </th>
+            <th>Программист
+                <input type="text" class="form-control" id="find_7">
+            </th>
+            <th>Тестировщик
+                <input type="text" class="form-control" id="find_8">
+            </th>
+        </tr>
+
+        <tbody>
+        {% for snb in box_accounting %}
+        <tr id={{snb.serial_num}}>
+            <td>{{snb.serial_num}}</td>
+            <td>{{snb.order}}</td>
+            <td>{{snb.name}}</td>
+            <td>{{snb.order.customer.form.name}} {{snb.order.customer.name}}</td>
+            <td>{{snb.scheme_developer.surname}} {{snb.scheme_developer.name|slice:":1"}}{{"."}}</td>
+            <td>{{snb.assembler.surname}} {{snb.assembler.name|slice:":1"}}{{"."}}</td>
+            <td>{{snb.programmer.surname}} {{snb.programmer.name|slice:":1"}}{{"."}}</td>
+            <td>{{snb.tester.surname}} {{snb.tester.name|slice:":1"}}{{"."}}</td>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+<hr> <!-- горизонтальная линия -->
+
+
+<!-- Модальное окно добавления записи в таблицу учёта шкафов -->
+<div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="{% url 'form_add_box' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Добавить запись</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% for f in form %}
+                    <div class="form-group row">
+                        <label id="{{ f.id_for_label }}" class="col-sm-4 col-form-label">{{ f.label }}</label>
+                        <!--                        <label for="{{ f.id_for_label }}" class="col-sm-4 col-form-label">{{ f.label }}</label>-->
+                        <div class="col-sm-8">
+                            {{ f }}
+                            {% if f.help_text %}
+                            <small id="help{{ f.id_for_label }}" class="form-text text-muted">{{ f.help_text
+                                }}</small>
+                            {% endif %}
+                            {% for error in f.errors %}
+                            <div class="invalid-feedback">
+                                {{ error }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Отмена
+                    </button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Подключаем скрипты -->
+<script src="{% static 'serial_number/js/script.js' %}"></script>
+
+{% endblock %}
+
+
+<!--{% comment %}-->
+<!--<h2>Компании</h2>-->
+<!--{% for c in company %}-->
+<!--<p>{{c.id}}, {{c.form.name}}, {{c.name}}, {{c.city}}, {{c.note}} </p>-->
+<!--{% endfor %}-->
+<!--<hr>-->
+<!--{% endcomment %}-->
+
+
+<!--{% comment %}-->
+<!--<h2>Люди</h2>-->
+<!--{% for p in person %}-->
+<!--<p>{{p.id}}. {{p.name}}, {{p.surname}}, {{p.patronymic}}, {{p.phone}}, {{p.email}}, {{p.company.name}},</p>-->
+<!--{% endfor %}-->
+<!--<hr>-->
+<!--{% endcomment %}-->
+
+
+<!--{% comment %}-->
+<!--&lt;!&ndash; таблица компаний &ndash;&gt;-->
+<!--<div class="container">&lt;!&ndash; впихиваем таблицу в контейнер &ndash;&gt;-->
+<!--    &lt;!&ndash;    Класс container создает контейнер с фиксированной шириной, которая адаптируется к размеру экрана и обеспечивает отступы слева и справа.&ndash;&gt;-->
+<!--    <table class="table table-bordered table-striped" id=TableСompany>-->
+<!--        &lt;!&ndash;    table-striped - для чередования белого и серого фона&ndash;&gt;-->
+<!--        &lt;!&ndash;    table-bordered"  -  для вертикальных линий&ndash;&gt;-->
+
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th colspan="4"><h3>Компании</h3></th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+
+<!--        <tr class="table text-center">-->
+<!--            <th>Форма</th>-->
+<!--            <th>Название</th>-->
+<!--            <th>Город</th>-->
+<!--            <th>Примечание</th>-->
+<!--        </tr>-->
+
+<!--        <tbody>-->
+<!--        {% for c in company %}-->
+
+<!--        <tr id=tr_{{c.id}}>-->
+
+<!--            {% if c.form.name %}-->
+<!--            <td>{{c.form.name}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--            <td>{{c.name}}</td>-->
+
+<!--            {% if c.city %}-->
+<!--            <td>{{c.city}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--            {% if c.note %}-->
+<!--            <td>{{c.note}}</td>-->
+<!--            {% else %}-->
+<!--            <td>без комментариев</td>-->
+<!--            {% endif %}-->
+
+<!--        </tr>-->
+<!--        {% endfor %}-->
+
+<!--        </tbody>-->
+<!--    </table>-->
+<!--    <hr> &lt;!&ndash; горизонтальная линия &ndash;&gt;-->
+<!--</div>-->
+<!--{% endcomment %}-->
+
+
+<!--{% comment %}-->
+<!--&lt;!&ndash; Таблица людей &ndash;&gt;-->
+<!--<div class="container">&lt;!&ndash; впихиваем таблицу в контейнер &ndash;&gt;-->
+<!--    &lt;!&ndash;    Класс container создает контейнер с фиксированной шириной, которая адаптируется к размеру экрана и обеспечивает отступы слева и справа.&ndash;&gt;-->
+<!--    <table class="table table-bordered table-striped" id=TableEquipment>-->
+<!--        &lt;!&ndash;    table-striped - для чередования белого и серого фона&ndash;&gt;-->
+<!--        &lt;!&ndash;    table-bordered - для вертикальных линий&ndash;&gt;-->
+
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th colspan="6"><h3>Серийные номера шкафов</h3></th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+
+<!--        <tr class="table text-center">-->
+<!--            <th>Имя</th>-->
+<!--            <th>Фамилия</th>-->
+<!--            <th>Отчество</th>-->
+<!--            <th>Телефон</th>-->
+<!--            <th>email</th>-->
+<!--            <th>Компания</th>-->
+<!--        </tr>-->
+
+<!--        <tbody>-->
+<!--        {% for p in person %}-->
+
+<!--        &lt;!&ndash;    если цена нулевая, то надо покрасить строку в красный намекая что тут что-то не ладное&ndash;&gt;-->
+<!--        &lt;!&ndash;<tr class="{% if e.price == 0 %} table-danger {% endif %}" id={{e.id}}>&ndash;&gt;-->
+
+<!--        <tr id=tr_{{p.id}}>-->
+
+<!--            {% if p.name %}-->
+<!--            <td>{{p.name}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+
+<!--            {% if p.surname %}-->
+<!--            <td>{{p.surname}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--            {% if p.patronymic %}-->
+<!--            <td>{{p.patronymic}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+
+<!--            {% if p.phone %}-->
+<!--            <td>{{p.phone}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--            {% if p.email %}-->
+<!--            <td>{{p.email}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--            {% if p.company.name %}-->
+<!--            <td>{{p.company.name}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--        </tr>-->
+<!--        {% endfor %}-->
+
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
+<!--<hr> &lt;!&ndash; горизонтальная линия &ndash;&gt;-->
+<!--{% endcomment %}-->
+
+
+<!--</body>-->
+<!--</html>-->

@@ -1,0 +1,5 @@
+.red-text {
+    color: red !important;
+}
+
+/* !important; это чтобы этот стиль стал важнее чем стиль бутстрап */

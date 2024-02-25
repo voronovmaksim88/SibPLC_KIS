@@ -1,0 +1,10 @@
+body {
+background-color: black;}
+
+h1 {
+    color: green;
+}
+
+.my-table-success {
+    background-color: rgb(0, 128, 0) !important; /* Тёмно-зелёный цвет */
+}

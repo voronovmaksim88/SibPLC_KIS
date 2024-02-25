@@ -1,0 +1,39 @@
+<!--admin - имя суперпользователя -->
+<!--django1313 пароль от админки -->
+{% extends 'base.html' %}
+
+{% block title %}
+{{name}}
+{% endblock %}
+
+
+{% block name%}
+{{name}}
+{% endblock %}
+
+{% block head %}
+{% load static %}
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3 mx-auto">
+            <a class="btn my-1 w-100 btn-primary" href="serial_number/"> Учёт с/н шкафов </a>
+            <a class="btn my-1 w-100 btn-primary" href="get_orders/"> Заказы </a>
+            <a class="btn my-1 w-100 btn-secondary"> Составление КП </a>
+            <a class="btn my-1 w-100 btn-secondary"> Стартовая страница со ссылками </a>
+            <a class="btn my-1 w-100 btn-primary" href="cost_calculation_automation_box/"> Расчёт стоимости ША </a>
+            <a class="btn my-1 w-100 btn-secondary"> БД компонентов </a>
+            <a class="btn my-1 w-100 btn-secondary"> Бланк ТЗ на ШАОВ </a>
+            <a class="btn my-1 w-100 btn-secondary"> Подбор ПЛК </a>
+            <a class="btn my-1 w-100 btn-secondary"> Учёт ЗП </a>
+            <a class="btn my-1 w-100 btn-secondary"> Основной сайт </a>
+            <a class="btn my-1 w-100 btn-secondary"> КИС </a>
+            <a class="btn my-1 w-100 btn-secondary"> Органайзер аналог LeaderTask </a>
+            <a class="btn my-1 w-100 btn-secondary"> Ежедневный отчёт </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

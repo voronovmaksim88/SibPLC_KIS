@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% block title %} {{name}} {% endblock %}
+
+
+{% block name%}
+    {{name}}
+{% endblock %}
+
+{% block head %}
+    {% load static %}
+    <!-- Подключаем скрипты -->
+    <script src="{% static 'orders/js/script.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+<!-- Таблица заказов -->
+{% load serial_number_my_filters %}
+<div class="container"><!-- впихиваем таблицу в контейнер -->
+    <!--    Класс container создает контейнер с фиксированной шириной, которая адаптируется к размеру экрана.-->
+    <table class="table table-bordered" id=TableOrder>
+        <!--    table-striped - для чередования белого и серого фона-->
+        <!--    table-bordered - для вертикальных линий-->
+
+        <thead>
+        <tr>
+            <th colspan="6">
+<!--                <h3>Заказы</h3>-->
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" >
+                    <label class="form-check-label" for="flexSwitchCheckChecked">Завершённые</label>
+                </div>
+            </th>
+        </tr>
+        </thead>
+
+        <tr class="table text-center">
+
+            <th>Серийный номер
+                <a class="btn btn-secondary" onclick="sort_table_orders_by_serial('up')">↓</a>
+                <a class="btn btn-secondary" onclick="sort_table_orders_by_serial('down')">↑</a>
+            </th>
+            <th>Заказчик</th>
+            <th>Приоритет
+                <a class="btn btn-secondary" onclick="sort_table_orders_by_priority('up')">↓</a>
+                <a class="btn btn-secondary" onclick="sort_table_orders_by_priority('down')">↑</a>
+            </th>
+            <th>Название</th>
+            <th>Статус</th>
+        </tr>
+
+        <tbody>
+
+
+        <!--        {% for on_ in order %}-->
+        <!--        <tr id="on_{{ on_.id }}" class="{{ status_class_mapping|default_if_none:''|get:on_.status }}">-->
+
+        <!--            <td>{{on_.id}}</td>-->
+        <!--            {% if on_.status == 0 or on_.status == 1 or on_.status == 2 or on_.status == 3 or on_.status == 7 %}-->
+        <!--            <td><b>{{on_.serial}}</b></td>-->
+        <!--            {% else %}-->
+        <!--            <td>{{on_.serial}}</td>-->
+        <!--            {% endif %}-->
+
+        <!--            <td>{{on_.customer.form.name}} {{on_.customer.name}}</td>-->
+
+        <!--            &lt;!&ndash; Приоритет&ndash;&gt;-->
+        <!--            {% if on_.priority >= 1 and on_.priority <= 9 %}-->
+        <!--            <td>{{on_.priority}}</td>-->
+        <!--            {% else %}-->
+        <!--            <td> нет</td>-->
+        <!--            {% endif %}-->
+
+        <!--            <td>{{on_.name}}</td>-->
+
+        <!--            &lt;!&ndash; Статус&ndash;&gt;-->
+        <!--            {% if on_.status == 0 %}-->
+        <!--            <td>Не определён</td>-->
+        <!--            {% endif %}-->
+        <!--            {% if on_.status == 1 %}-->
+        <!--            <td>На согласовании</td>-->
+        <!--            {% endif %}-->
+        <!--            {% if on_.status == 2 %}-->
+        <!--            <td>В работе</td>-->
+        <!--            {% endif %}-->
+        <!--            {% if on_.status == 3 %}-->
+        <!--            <td> Просрочено</td>-->
+        <!--            {% endif %}-->
+        <!--            {% if on_.status == 4 %}-->
+        <!--            <td> Выполнено в срок</td>-->
+        <!--            {% endif %}-->
+        <!--            {% if on_.status == 5 %}-->
+        <!--            <td> Выполнено НЕ в срок</td>-->
+        <!--            {% endif %}-->
+        <!--            {% if on_.status == 6 %}-->
+        <!--            <td> Не согласовано</td>-->
+        <!--            {% endif %}-->
+        <!--            {% if on_.status == 7 %}-->
+        <!--            <td> На паузе</td>-->
+        <!--            {% endif %}-->
+        <!--            {% if on_.status == none %}-->
+        <!--            <td> ?</td>-->
+        <!--            {% endif %}-->
+
+        <!--        </tr>-->
+        <!--        {% endfor %}-->
+
+        </tbody>
+    </table>
+
+
+</div>
+<hr> <!-- горизонтальная линия -->
+<script>
+    receive_order_JSON();
+</script>
+
+
+<!--{% comment %}-->
+<!--<h2>Люди</h2>-->
+<!--{% for p in person %}-->
+<!--<p>{{p.id}}. {{p.name}}, {{p.surname}}, {{p.patronymic}}, {{p.phone}}, {{p.email}}, {{p.company.name}},</p>-->
+<!--{% endfor %}-->
+<!--<hr>-->
+<!--{% endcomment %}-->
+
+<!--{% comment %}-->
+<!--<h2>Серийные номера шкафов</h2>-->
+<!--{% for snb in box_accounting %}-->
+<!--<p>{{snb.id}}, {{snb.name}}, {{snb.project}}, {{snb.serial_num}}, {{snb.customer}}, {{snb.scheme_developer}},-->
+<!--    {{snb.assembler}}, {{snb.tester}}, {{snb.programmer}}</p>-->
+<!--{% endfor %}-->
+<!--<hr>-->
+<!--{% endcomment %}-->
+
+<!--{% comment %}-->
+<!--&lt;!&ndash; таблица компаний &ndash;&gt;-->
+<!--<div class="container">&lt;!&ndash; впихиваем таблицу в контейнер &ndash;&gt;-->
+<!--    &lt;!&ndash;    Класс container создает контейнер с фиксированной шириной, которая адаптируется к размеру экрана и обеспечивает отступы слева и справа.&ndash;&gt;-->
+<!--    <table class="table table-bordered table-striped" id=TableСompany>-->
+<!--        &lt;!&ndash;    table-striped - для чередования белого и серого фона&ndash;&gt;-->
+<!--        &lt;!&ndash;    table-bordered"  -  для вертикальных линий&ndash;&gt;-->
+
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th colspan="4"><h3>Компании</h3></th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+
+<!--        <tr class="table text-center">-->
+<!--            <th>Форма</th>-->
+<!--            <th>Название</th>-->
+<!--            <th>Город</th>-->
+<!--            <th>Примечание</th>-->
+<!--        </tr>-->
+
+<!--        <tbody>-->
+<!--        {% for c in company %}-->
+
+<!--        <tr id=tr_{{c.id}}>-->
+
+<!--            {% if c.form.name %}-->
+<!--            <td>{{c.form.name}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--            <td>{{c.name}}</td>-->
+
+<!--            {% if c.city %}-->
+<!--            <td>{{c.city}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--            {% if c.note %}-->
+<!--            <td>{{c.note}}</td>-->
+<!--            {% else %}-->
+<!--            <td>без комментариев</td>-->
+<!--            {% endif %}-->
+
+<!--        </tr>-->
+<!--        {% endfor %}-->
+
+<!--        </tbody>-->
+<!--    </table>-->
+<!--    <hr> &lt;!&ndash; горизонтальная линия &ndash;&gt;-->
+<!--</div>-->
+<!--{% endcomment %}-->
+
+
+<!--{% comment %}-->
+<!--&lt;!&ndash; Таблица людей &ndash;&gt;-->
+<!--<div class="container">&lt;!&ndash; впихиваем таблицу в контейнер &ndash;&gt;-->
+<!--    &lt;!&ndash;    Класс container создает контейнер с фиксированной шириной, которая адаптируется к размеру экрана и обеспечивает отступы слева и справа.&ndash;&gt;-->
+<!--    <table class="table table-bordered table-striped" id=TableEquipment>-->
+<!--        &lt;!&ndash;    table-striped - для чередования белого и серого фона&ndash;&gt;-->
+<!--        &lt;!&ndash;    table-bordered - для вертикальных линий&ndash;&gt;-->
+
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th colspan="6"><h3>Серийные номера шкафов</h3></th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+
+<!--        <tr class="table text-center">-->
+<!--            <th>Имя</th>-->
+<!--            <th>Фамилия</th>-->
+<!--            <th>Отчество</th>-->
+<!--            <th>Телефон</th>-->
+<!--            <th>email</th>-->
+<!--            <th>Компания</th>-->
+<!--        </tr>-->
+
+<!--        <tbody>-->
+<!--        {% for p in person %}-->
+
+<!--        &lt;!&ndash;    если цена нулевая, то надо покрасить строку в красный намекая что тут что-то не ладное&ndash;&gt;-->
+<!--        &lt;!&ndash;<tr class="{% if e.price == 0 %} table-danger {% endif %}" id={{e.id}}>&ndash;&gt;-->
+
+<!--        <tr id=tr_{{p.id}}>-->
+
+<!--            {% if p.name %}-->
+<!--            <td>{{p.name}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+
+<!--            {% if p.surname %}-->
+<!--            <td>{{p.surname}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--            {% if p.patronymic %}-->
+<!--            <td>{{p.patronymic}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+
+<!--            {% if p.phone %}-->
+<!--            <td>{{p.phone}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--            {% if p.email %}-->
+<!--            <td>{{p.email}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--            {% if p.company.name %}-->
+<!--            <td>{{p.company.name}}</td>-->
+<!--            {% else %}-->
+<!--            <td class="table-danger">?</td>-->
+<!--            {% endif %}-->
+
+<!--        </tr>-->
+<!--        {% endfor %}-->
+
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
+<!--<hr> &lt;!&ndash; горизонтальная линия &ndash;&gt;-->
+<!--{% endcomment %}-->
+
+{% endblock %}

@@ -1,0 +1,4 @@
+# Project exclude paths
+/.venv/
+/.home_venv/
+/.work_venv/

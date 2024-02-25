@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+{% load static %} <!-- Подключаем статические файлы: скрипты, картинки, стили  -->
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="../media/photos/favicon.ico" type="image/x-icon">
+    <link rel="icon" href='../media/photos/favicon.ico' type="image/x-icon">
+    <title>{% block title %} {% endblock %}</title>
+    <link type="text/css" href="{% static '/bootstrap-5.3.2-dist/css/bootstrap.css' %}" rel="stylesheet"/>
+    <style>
+        body {
+            background-color: RGB(70,70,70);
+        }
+        h3 {
+            color: green;
+        }
+    </style>
+    {% block head %} {% endblock %}
+</head>
+
+<body>
+
+<div class="d-flex mb-3 p-1 m-2 border border-secondary-subtle rounded-3">
+    <h3 class="text-success align-self-center m-0 mx-2 me-auto">{% block name%} {% endblock %}</h3>
+    {% if user.is_authenticated %}
+    <!--    <a class="btn btn-secondary mx-1"> {{ user.username }} ⯆</a>-->
+
+    <!-- Родительский элемент dropdown -->
+    <div class="dropdown">
+        <!-- Кнопка для открытия dropdown -->
+        <button class="btn btn-secondary dropdown-toggle mx-1" type="button" id="dropdownMenuButton1"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            {{ user.username }}
+        </button>
+        <!-- Само выпадающее меню -->
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <!-- Элементы выпадающего меню -->
+            <li>
+                <div class="dropdown-item">
+                    <form action="{% url 'logout' %}" method="post" id="logout-form">
+                        {% csrf_token %}
+                        <a class="dropdown-item" href="#" onclick="document.getElementById('logout-form').submit();">
+                            Logout
+                        </a>
+                    </form>
+                </div>
+            </li>
+            {% if user.is_authenticated and user.username == "admin" %}
+            <button class="btn btn-secondary w-100">DB_test</button>
+            <button class="btn btn-primary w-100">DB_work</button>
+            {% endif %}
+        </ul>
+    </div>
+
+    <!--    <a href="{% url 'logout' %}">Выйти</a>-->
+    {% else %}
+    <a class="btn btn-secondary mx-1"> Вы не авторизованы</a>
+    <a class="btn btn-secondary mx-1" href="{% url 'login' %}">Войти</a>
+    {% endif %}
+
+    <a class="mx-1" href="{% url 'index' %}">
+        <img src="/media/photos/home1.png">
+    </a>
+</div>
+
+<!--p-3: Это класс Bootstrap для «padding», который задает внутренний отступ со всех сторон элемента с размером в 3 единицы -->
+<!--(Bootstrap использует от 0 до 5 для контроля размера отступа; каждая единица увеличивает размер отступа, -->
+<!--основанного на определенном масштабе, заданном в CSS)-->
+<script src="{% static 'bootstrap-5.3.2-dist/js/bootstrap.bundle.js' %}"></script>
+
+
+{% block body %}
+{% endblock %}
+
+</body>
+</html>
